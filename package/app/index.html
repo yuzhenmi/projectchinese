@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Write Chinese online for free!</title>
+		<meta name="Keywords" content="Chinese,write,Asian,language,travel,HTML5,touch,Asia,east,simplified,traditional,online,free,mouse,practice,learn,words,paragraphs"/>
+		<meta name="Description" content="Practice writing Chinese online for free! Support for both touch and mouse."/>
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script type="text/javascript" src="http://writechinese.co.nf/utility.js"></script>
+		<script type="text/javascript" src="http://writechinese.co.nf/brush.js"></script>
+		<script type="text/javascript" src="http://writechinese.co.nf/writingcanvas.js"></script>
+		<script type="text/javascript" src="http://writechinese.co.nf/viewingcanvas.js"></script>
+		<link rel="stylesheet" type="text/css" href="http://writechinese.co.nf/style.css">
+	</head>
+	<body>
+		<div id="banner" height="100">
+			<img src="http://writechinese.co.nf/img/topbanner.png" alt="Chinese" width="100%">
+			<ul id="h-menu">
+				<li><a href="http://writechinese.co.nf/">Home</a></li>
+				<li><a href="http://writechinese.co.nf/package">Packages</a>
+					<ul>
+						<li><a href="http://writechinese.co.nf/package/word">Words</a></li>
+						<li><a href="http://writechinese.co.nf/package/phrase">Phrases</a></li>
+						<li><a href="http://writechinese.co.nf/package/paragraph">Paragraphs</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<div id="content">
+			<div id="viewing">
+				<canvas id="viewingCanvas" width="384" height="384">
+				</canvas>
+				<div id="pageDisplay" align="center">1 of 1</div>
+				<div id="buttonwrapper" align="center">
+					<button type="button" disabled width="60" align="left" id="prevPageButton" onclick="click_prevPageButton();">Previous Page</button>
+					<button type="button" disabled width="40" align="center" id="backButton" onclick="click_backButton();">Back</button>
+					<button type="button" disabled width="60" align="right" id="nextPageButton" onclick="click_nextPageButton();">Next Page</button>
+				</div>
+			</div>
+			<div id="writing">
+				<canvas id="writingCanvas" width="384" height="384">
+				</canvas>
+			</div>
+		</div>
+		<script "text/javascript">
+			var svgcache = {};
+			var name = null,
+				description = null,
+				content = null;
+			var pageNum = 0,
+				maxPageNum = 1;
+			var writingCanvas = new WritingCanvas("writingCanvas"),
+				viewingCanvas = new ViewingCanvas("viewingCanvas", function(fontid) {
+					writingCanvas.update(fontid);
+				}, function(page, maxPage, isInner) {
+					pageNum = page;
+					maxPageNum = maxPage;
+					document.getElementById("pageDisplay").innerText = (page + 1) + " of " + maxPage;
+					document.getElementById("backButton").disabled = !isInner;
+					document.getElementById("prevPageButton").disabled = !(page > 0);
+					document.getElementById("nextPageButton").disabled = !(page < maxPage - 1);
+				});
+			var params = Utility.getURLParams(),
+				type = params["type"],
+				id = params["id"];
+			var page = 0;
+			if (type != undefined && id != undefined) {
+				if (type == "word" || type == "phrase" || type == "paragraph") {
+					Utility.query("http://writechinese.co.nf/getpackage.php?type=" + type + "&id=" + id, function(responseText) {
+						var results = JSON.parse(responseText);
+						name = results.name;
+						description = results.description;
+						var sets = results.content.split(";");
+						content = [];
+						for (var n = 0; n < sets.length; n++) {
+							content.push(sets[n].split("+"));
+						}
+						writingCanvas.initialize();
+						viewingCanvas.initialize(content);
+					});
+				}
+				else {
+					location.href = "http://writechinese.co.nf/error";
+				}
+			}
+			else {
+				location.href = "http://writechinese.co.nf/error";
+			}
+			
+			function click_prevPageButton() {
+				pageNum--;
+				viewingCanvas.setPage(pageNum);
+			}
+			function click_nextPageButton() {
+				pageNum++;
+				viewingCanvas.setPage(pageNum);
+			}
+			function click_backButton() {
+				viewingCanvas.back();
+			}
+		</script>
+	</body>
+</html>
