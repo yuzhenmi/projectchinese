@@ -13,7 +13,6 @@ function Brush(type, thickness, density, canvas, context) {
 		x: 0,
 		y: 0
 	};
-	this.drawTimer = -1;
 	this.touchIndex = -1;
 	
 	switch(type) {
@@ -36,13 +35,12 @@ Brush.prototype.touchstart = function(event) {
 		this.touchIndex = event.touches[event.touches.length - 1].identifier;
 		this.pos = Utility.getTouchPos(event.touches[event.touches.length - 1], this.canvas);
 		this.lastPos = this.pos;
-		this.drawTimer = setInterval($.proxy(this.drawTimerHandler, this), 20);
 	}
 };
 Brush.prototype.mousedown = function(event) {
 	this.pos = Utility.getMousePos(event, this.canvas);
 	this.lastPos = this.pos;
-	this.drawTimer = setInterval($.proxy(this.drawTimerHandler, this), 20);
+	this.touchIndex = 0;
 };
 
 Brush.prototype.touchend = function(event) {
@@ -56,14 +54,13 @@ Brush.prototype.touchend = function(event) {
 		}
 		if (!isTouched) {		//first touch lifted
 			this.touchIndex = -1;
-			clearInterval(this.drawTimer);
-			this.drawTimer = -1;
+			this.draw();
 		}
 	}
 };
 Brush.prototype.mouseup = function(event) {
-	clearInterval(this.drawTimer);
-	this.drawTimer = -1;
+	this.draw();
+	this.touchIndex = -1;
 };
 
 Brush.prototype.touchmove = function(event) {
@@ -81,14 +78,18 @@ Brush.prototype.touchmove = function(event) {
 		}
 		else {
 			this.pos = Utility.getTouchPos(touch, this.canvas);
+			this.draw();
 		}
 	}
 };
 Brush.prototype.mousemove = function(event) {
-	this.pos = Utility.getMousePos(event, this.canvas);
+	if (this.touchIndex >= 0) {
+		this.pos = Utility.getMousePos(event, this.canvas);
+		this.draw();
+	}
 }
 
-Brush.prototype.drawTimerHandler = function() {
+Brush.prototype.draw = function() {
 	this.context.save();
 	this.context.globalAlpha = 0.5;
 	var length = this.fiberPoints.length;

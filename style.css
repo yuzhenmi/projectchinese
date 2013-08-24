@@ -117,7 +117,7 @@
 
 #viewing, #writing {
 	margin-top:5px;
-	width: 384px;
+	width:384px;
 	padding:0px;
 	border-style:ridge;
 	border-width:10px;
@@ -134,6 +134,11 @@
 	width: 50px;
 	margin:0 22px;
 }
-#prevPageButton, #nextPageButton {
+#prevPageButton, #nextPageButton, #prevCharButton, #nextCharButton {
 	width: 120px;
+}
+
+#translationwrapper {
+	margin:auto;
+	width:1024px;
 }

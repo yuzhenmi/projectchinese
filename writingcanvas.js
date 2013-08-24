@@ -2,7 +2,7 @@ function WritingCanvas(canvas) {
 	this.canvas = document.getElementById(canvas);
 	this.context = this.canvas.getContext("2d");
 	this.brush = null;
-	this.drawBackground();
+	this.clear();
 }
 
 WritingCanvas.prototype.drawBackground = function() {
