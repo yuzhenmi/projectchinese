@@ -16,7 +16,7 @@ elseif ($type == 'paragraph') {
 
 if ($table != '') {
 	//connect to database
-	$link = mysql_connect('fdb5.biz.nf', '1487225_mydb', '19910401')
+	$link = mysql_connect('fdb5.biz.nf', '1487225_mydb', 'pass')
 		or die('Could not connect: ' . mysql_error());
 	mysql_select_db('1487225_mydb') or die('Could not select database');
 	
